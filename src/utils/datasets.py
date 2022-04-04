@@ -43,7 +43,7 @@ import os
 #         return xx, yy
 
 class UbiquantDatasetOriginal(torch.utils.data.Dataset):
-    """ Simple dataset
+    """ Simple dataset with optional one-hot encoding for investment_id
     """
     def __init__(self, df_raw, invst_ids, one_hot_invest=True):
         if one_hot_invest:
@@ -76,7 +76,9 @@ class UbiquantDatasetOriginal(torch.utils.data.Dataset):
         return self.info[ind]
 
 class UbiquantDatasetByTime(torch.utils.data.Dataset):
-    """ Dataset for RNN with all investment_id
+    """ Dataset for RNN with all investment_id.
+        Need to download the pre-processed by_steps.zip from: 
+        https://drive.google.com/file/d/1hpC4Lxf-MnRUDExFnDI7D8pihQFvUQR5/view?usp=sharing
     """
     def __init__(self,
                  dir_steps,
