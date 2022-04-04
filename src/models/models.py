@@ -5,7 +5,9 @@ class MLP(torch.nn.Module):
     """ A toy baseline model
     """
     def __init__(
-        self, in_size,
+        self, 
+        in_size,
+        output_size=1,
         hidden_sizes = [64, 64, 64],
         batchnorm = [True, True, True],
         activation = ['ReLU', 'ReLU', 'ReLU'],
@@ -27,9 +29,26 @@ class MLP(torch.nn.Module):
             hidden_layers.append(self.decide_activation(activation[i]))
             if dropout[i]:
                 hidden_layers.append(nn.Dropout(p=0.2))
-        output_layer = [nn.Linear(hidden_sizes[-1], 40)]
+        output_layer = [nn.Linear(hidden_sizes[-1], output_size)]
         layers = hidden_layers + output_layer
         self.laysers = nn.Sequential(*layers)
 
     def forward(self, x):
         return self.laysers(x)
+
+    @staticmethod
+    def decide_activation(str_activation):
+        assert str_activation in ['ReLU', 'LeakyReLU', 'Sigmoid', 'Tanh', 'Softplus', 'SiLU']
+        if str_activation == 'ReLU':
+            return nn.ReLU()
+        elif str_activation == 'LeakyReLU':
+            return nn.LeakyReLU()
+        elif str_activation == 'Sigmoid':
+            return nn.Sigmoid()
+        elif str_activation == 'Tanh':
+            return nn.Tanh()
+        elif str_activation == 'Softplus':
+            return nn.Softplus()
+        elif str_activation == 'SiLU':
+            return nn.SiLU()
+

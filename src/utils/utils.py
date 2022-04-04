@@ -8,7 +8,7 @@ def train_single_epoch(args, model):
     train_loader = args['train_loader']
     criterion = args['criterion']
     optimizer = args['optimizer']
-    lr_scheduler = args['lr_scheduler']
+    lr_scheduler = args['scheduler']
     scaler = args['scaler']
     epoch = args['epoch']
     
@@ -22,7 +22,7 @@ def train_single_epoch(args, model):
         optimizer.zero_grad()
         with torch.cuda.amp.autocast():
             y_pred = model.forward(x)
-            loss = criterion(y_pred, y) # args: input, target, input_lengths, target_lengths
+            loss = criterion(y_pred, y)
         scaler.scale(loss).backward()
         scaler.step(optimizer)
         scaler.update()
@@ -33,6 +33,7 @@ def train_single_epoch(args, model):
             lr="{:.04f}".format(float(optimizer.param_groups[0]['lr']))
         )
         batch_bar.update()
+        lr_scheduler.step()
     total_loss /= (len(train_loader)+1)
     batch_bar.close()
     return total_loss
@@ -44,19 +45,22 @@ def evaluate(args, model):
     model.eval()
 
     val_loss = 0
+    batch_bar = tqdm(total=len(val_loader), dynamic_ncols=True,
+                     leave=False, position=0, desc=f"Evaluate epoch {epoch}")
     for b_idx, data in enumerate(val_loader, 0):
-        x, y, lx, ly = data
+        x, y = data
         x, y = x.cuda(), y.cuda()
-        y = torch.swapaxes(y, 0, 1) # CTCLoss expects target N(batch size) x S(max length)
         with torch.cuda.amp.autocast():
             with torch.no_grad():
-                h, lh = model.forward(x, lx)
-            loss = criterion(h, y, lh, ly) # args: input, target, input_lengths, target_lengths
+                y_pred = model.forward(x)
+            loss = criterion(y_pred, y)
             val_loss += float(loss)
+        batch_bar.set_postfix(
+            loss="{:.04f}".format(float(val_loss/(b_idx + 1))),
+        )
     val_loss /= (len(val_loader)+1)
     # Save model as needed
     # if scheduler is not None: scheduler.step(val_loss)
-
     return val_loss
 
         

@@ -10,6 +10,7 @@ This repository is for CMU IDL team project in Spring 2022 semester.
 
 
 ## Existing Notebooks:
+* [starter notebooks](https://www.kaggle.com/competitions/ubiquant-market-prediction/discussion/303783)
 * [A PyTorch + Transformer Implementation](https://www.kaggle.com/code/siahuat/pytorch-template-transformer-data-augmentation)
 
 ## Other Notes:
