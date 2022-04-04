@@ -30,7 +30,7 @@ if not os.path.exists(DIR_TRAINED):
 def main(args):
     print('==>> Start main loop...')
     print('==>> Loading data...')
-    df_raw = pd.read_parquet(os.path.join(DIR_DATA, 'train_low_mem.parquet'))
+    df_raw = pd.read_parquet(args['dir_train_parquet'])
     invst_ids = sorted(list(df_raw['investment_id'].unique()))
     if 'subset' in args: 
         df_raw = df_raw.iloc[:int(args['subset']*len(df_raw.index))]
@@ -43,7 +43,8 @@ def main(args):
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
 
     print('==>> Create model...')
-    model = models.MLP(in_size=train_dataset.n_features).cuda()
+    # model = models.MLP(in_size=train_dataset.n_features).cuda()
+    model = models.MLPwCNN(in_size=train_dataset.n_features).cuda()
     criterion = torch.nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=args['lr'])
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=(len(train_loader) * args['epochs']), eta_min=args['min_lr'])
@@ -86,14 +87,20 @@ def main(args):
 
 if __name__ == '__main__':
     args = {
+        # -------------------------------- Data ------------------------------ #
+        'dir_train_parquet': os.path.join(DIR_DATA, 'train_low_mem.parquet'),
+        # 'dir_train_parquet': '/media/user/12TB1/HanLi/GitHub/CMU11785-project/local_data/archive/investment_ids/0.parquet',
         # 'subset': 0.1, # portion of data to use, comment this line to use full data
+        # ------------------------------- Train ------------------------------ #
         'batch_size': 256,
         'starting_epoch': 1,
         'epochs': 15,
         'lr': 1e-3,
         'min_lr': 1e-4,
+        'model_name': 'test.pt',
+        # -------------------------------- Log ------------------------------- #
         'wb_entity': '11785_project',
         'wb_project': 'baseline',
-        'wb_name': 'baseline_MLP',
+        'wb_name': 'baseline_MLP+CNN',
     }
     main(args)

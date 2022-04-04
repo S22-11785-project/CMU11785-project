@@ -52,3 +52,31 @@ class MLP(torch.nn.Module):
         elif str_activation == 'SiLU':
             return nn.SiLU()
 
+class MLPwCNN(torch.nn.Module):
+    """ MLP regressor with CNN feature extractor
+    """
+    def __init__(self, in_size):
+        super(MLPwCNN, self).__init__()
+        self.emb = nn.Sequential(
+            nn.Conv1d(1, 16, kernel_size=3, padding=1, stride=1),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.Conv1d(16, 16, kernel_size=3, padding=1, stride=1),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            # nn.AdaptiveAvgPool2d((1, 1))
+        )
+        self.mlp = MLP(in_size*16)
+
+
+    def forward(self, x):
+        # original x shape: (B, in_features)
+
+        # Convert x to (B, 1, in_features) for Conv1d
+        x = x[:, None, :]
+        out = self.emb.forward(x)
+
+        # Flatten the output channels to (B, in_features*emb_out_ch)
+        out = torch.flatten(out, start_dim=1)
+        out = self.mlp(out)
+        return out
