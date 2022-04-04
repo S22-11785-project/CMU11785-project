@@ -45,8 +45,11 @@ import os
 class UbiquantDatasetOriginal(torch.utils.data.Dataset):
     """ Simple dataset with optional one-hot encoding for investment_id
     """
-    def __init__(self, df_raw, invst_ids, one_hot_invest=True):
+    def __init__(self, df_raw, invst_ids, one_hot_invest=True, test=False):
+        self.test = test # Whether this dataset will be used for testing
+        # Handle feature columns
         if one_hot_invest:
+            assert invst_ids is not None
             df_raw = df_raw.reset_index(drop=True)
             df_invst = pd.get_dummies(df_raw['investment_id'], dtype=float).reset_index(drop=True)
             df_complete = pd.DataFrame(np.zeros([len(df_invst.index), len(invst_ids)]), columns=invst_ids)
@@ -56,24 +59,33 @@ class UbiquantDatasetOriginal(torch.utils.data.Dataset):
             f_cols = df_invst.columns.tolist() + [f'f_{i}' for i in range(300)]
         else:
             f_cols = ['investment_id'] + [f'f_{i}' for i in range(300)]
-        t_cols = ['target']
-        info_cols = ['row_id', 'time_id']
+
+
         df_raw = df_raw.astype('float32')
+        info_cols = ['row_id', 'time_id']
         self.X = df_raw[f_cols].to_numpy()
-        self.Y = df_raw[t_cols].to_numpy()
         self.info = df_raw[info_cols].to_numpy()
+
+        if not test:
+            t_cols = ['target']
+            self.Y = df_raw[t_cols].to_numpy()
+
         self.length, self.n_features = self.X.shape[0], self.X.shape[1]
 
     def __len__(self):
         return self.length
 
     def __getitem__(self, ind):
-        xx = self.X[ind]
-        yy = self.Y[ind]
-        return xx, yy
+        if self.test:
+            return self.X[ind]
+        else:
+            return self.X[ind], self.Y[ind]
 
     def get_info(self, ind):
         return self.info[ind]
+
+
+
 
 class UbiquantDatasetByTime(torch.utils.data.Dataset):
     """ Dataset for RNN with all investment_id.

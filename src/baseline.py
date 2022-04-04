@@ -35,7 +35,7 @@ def main(args):
     if 'subset' in args: 
         df_raw = df_raw.iloc[:int(args['subset']*len(df_raw.index))]
 
-    df_train, df_eval = train_test_split(df_raw, test_size=0.25, shuffle=True)
+    df_train, df_eval = train_test_split(df_raw, test_size=0.01, shuffle=True)
     batch_size = args['batch_size']
     train_dataset = datasets.UbiquantDatasetOriginal(df_train, invst_ids, one_hot_invest=False)
     val_dataset = datasets.UbiquantDatasetOriginal(df_eval, invst_ids, one_hot_invest=False)
@@ -94,13 +94,13 @@ if __name__ == '__main__':
         # ------------------------------- Train ------------------------------ #
         'batch_size': 256,
         'starting_epoch': 1,
-        'epochs': 15,
+        'epochs': 30,
         'lr': 1e-3,
         'min_lr': 1e-4,
-        'model_name': 'test.pt',
+        'model_name': 'MLP_w_CNN.pt',
         # -------------------------------- Log ------------------------------- #
         'wb_entity': '11785_project',
         'wb_project': 'baseline',
-        'wb_name': 'baseline_MLP+CNN',
+        'wb_name': 'baseline_MLP+CNN_3',
     }
     main(args)

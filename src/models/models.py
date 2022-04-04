@@ -8,10 +8,10 @@ class MLP(torch.nn.Module):
         self, 
         in_size,
         output_size=1,
-        hidden_sizes = [64, 64, 64],
-        batchnorm = [True, True, True],
-        activation = ['ReLU', 'ReLU', 'ReLU'],
-        dropout = [True, True, True],
+        hidden_sizes = [64, 256, 512, 256],
+        batchnorm = [True, True, True, True],
+        activation = ['ReLU', 'ReLU', 'ReLU', 'ReLU'],
+        dropout = [False, False, False, True],
     ):
         super(MLP, self).__init__()
         assert len(hidden_sizes) == len(batchnorm) == len(activation) == len(dropout)
@@ -61,12 +61,12 @@ class MLPwCNN(torch.nn.Module):
             nn.Conv1d(1, 16, kernel_size=3, padding=1, stride=1),
             nn.BatchNorm1d(16),
             nn.ReLU(),
-            nn.Conv1d(16, 16, kernel_size=3, padding=1, stride=1),
-            nn.BatchNorm1d(16),
+            nn.Conv1d(16, 32, kernel_size=3, padding=1, stride=1),
+            nn.BatchNorm1d(32),
             nn.ReLU(),
             # nn.AdaptiveAvgPool2d((1, 1))
         )
-        self.mlp = MLP(in_size*16)
+        self.mlp = MLP(in_size*32)
 
 
     def forward(self, x):
