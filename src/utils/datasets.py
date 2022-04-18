@@ -118,3 +118,30 @@ class UbiquantDatasetByTime(torch.utils.data.Dataset):
         xx = np.array(ls_x).squeeze()
         yy = self.Y_df.iloc[ind+self.lookback+self.horizon-1].to_numpy()
         return xx, yy
+    
+class UbiquantDatasetByInvestmentID(torch.utils.data.Dataset):
+    """ Dataset for RNN with all investment_id.
+        pre-processed data
+    """
+    def __init__(self, data_path, partition= "train"):
+
+        self.X_dir = data_path + "/feats/" 
+        self.Y_dir = data_path + "/target/" 
+
+        self.X_files = os.listdir(self.X_dir)   # TODO: list files in the feats directory
+        self.Y_files = os.listdir(self.Y_dir)   # TODO: list files in the target directory
+       
+        assert(len(self.X_files) == len(self.Y_files))
+
+    def __len__(self):
+        return len(self.X_files)
+
+    def __getitem__(self, ind):
+
+        X_path = self.X_dir + self.X_files[ind]
+        Y_path = self.Y_dir + self.Y_files[ind]
+            
+        X = torch.from_numpy(np.load(X_path))
+        Y = torch.from_numpy(np.load(Y_path))
+
+        return X, Y
