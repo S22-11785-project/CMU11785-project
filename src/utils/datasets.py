@@ -130,6 +130,9 @@ class UbiquantDatasetByInvestmentID(torch.utils.data.Dataset):
 
         self.X_files = os.listdir(self.X_dir)   # TODO: list files in the feats directory
         self.Y_files = os.listdir(self.Y_dir)   # TODO: list files in the target directory
+        
+        self.X_files = sorted(self.X_files)
+        self.Y_files = sorted(self.Y_files)
        
         assert(len(self.X_files) == len(self.Y_files))
 
