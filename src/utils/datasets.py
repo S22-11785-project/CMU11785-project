@@ -141,7 +141,7 @@ class UbiquantDatasetByInvestmentID(torch.utils.data.Dataset):
         X_path = self.X_dir + self.X_files[ind]
         Y_path = self.Y_dir + self.Y_files[ind]
             
-        X = torch.from_numpy(np.load(X_path))
-        Y = torch.from_numpy(np.load(Y_path))
+        X = torch.from_numpy(np.load(X_path)) #(T, num_feat)
+        Y = torch.from_numpy(np.load(Y_path)) #(T,)
 
         return X, Y
