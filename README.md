@@ -16,3 +16,7 @@ This repository is for CMU IDL team project in Spring 2022 semester.
 ## Other Notes:
 * [Understand the API](https://www.kaggle.com/code/melanie7744/understanding-the-submission-api-for-newbies)
 * [Parquet Format Dataset](https://www.kaggle.com/c/ubiquant-market-prediction/discussion/301724)
+* Timeseries Libraries:
+  - [PytorchForecasting](https://pytorch-forecasting.readthedocs.io/en/stable/index.html)
+  - [Darts](https://unit8co.github.io/darts/index.html)
+  - [Prophet](https://facebook.github.io/prophet/)
