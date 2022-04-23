@@ -33,9 +33,9 @@ class Pearson(MultiHorizonMetric):
             losses: Pearson correlation coefficient, shape:[prediction_length, Quantile]
         
         """
-        B, T, Q = y_pred.shape
+        _, T, _ = y_pred.shape
         losses = []
-        for t in range(2):
+        for t in range(T):
             loss_t = []
             for i, q in enumerate(self.quantiles):
                 x1 = x[..., t, i].unsqueeze(0)
