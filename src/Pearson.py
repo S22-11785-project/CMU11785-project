@@ -30,7 +30,8 @@ class Pearson(MultiHorizonMetric):
             y_pred: output from tft, shape:[Batch_size, prediction_length, Quantile]
             target: true value, shape:[Batch_size, prediction_length]
         output:
-            losses: Pearson correlation coefficient, shape:[prediction_length, Quantile]
+            losses: Pearson correlation coefficient, shape:[Batch_size, prediction_length, Quantile]
+                    for each y_pred in the batch, the losses is the same
         
         """
         _, T, _ = y_pred.shape
@@ -38,13 +39,13 @@ class Pearson(MultiHorizonMetric):
         for t in range(T):
             loss_t = []
             for i, q in enumerate(self.quantiles):
-                x1 = x[..., t, i].unsqueeze(0)
-                y1 = y[..., t].unsqueeze(0)
-                z = torch.cat((x1, y1), dim=0)
+                y1 = y_pred[..., t, i].unsqueeze(0)
+                t1 = target[..., t].unsqueeze(0)
+                z = torch.cat((y1, t1), dim=0)
                 errors = torch.corrcoef(z)[0][1]
                 loss_t.append(torch.max((q - 1) * errors, q * errors).unsqueeze(-1))
             loss_t = torch.cat(loss_t, dim=0)
             losses.append(loss_t.unsqueeze(0))
         losses = torch.cat(losses, dim=0)
 
-        return losses
+        return torch.ones_like(y_pred) * losses
