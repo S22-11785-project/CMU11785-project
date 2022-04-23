@@ -31,7 +31,8 @@ class Pearson(MultiHorizonMetric):
             target: true value, shape:[Batch_size, prediction_length]
         output:
             losses: Pearson correlation coefficient, shape:[Batch_size, prediction_length, Quantile]
-                    for each y_pred in the batch, the losses is the same
+                    for each y_pred in the batch, the losses is the same,
+                    i,e. losses[i, ...] = losses[j, ...]
         
         """
         _, T, _ = y_pred.shape
