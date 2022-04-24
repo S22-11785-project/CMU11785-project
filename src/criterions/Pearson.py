@@ -1,3 +1,4 @@
+import torch
 from pytorch_forecasting.metrics import MultiHorizonMetric
 
 
