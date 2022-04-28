@@ -93,7 +93,7 @@ class Pearson_test(MultiHorizonMetric):
         t1 = target.reshape(1, B*T)
         losses = []
         for i, q in enumerate(self.quantiles):
-            z = torch.cat((y1[...,0], t1), dim=0)
+            z = torch.cat((y1[..., 0], t1), dim=0)
             errors = torch.corrcoef(z)[0][1]
             losses.append(torch.max((q - 1) * errors, q * errors).unsqueeze(-1))
         losses = torch.cat(losses, dim=0)
