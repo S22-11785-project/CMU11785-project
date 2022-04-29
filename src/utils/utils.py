@@ -4,6 +4,8 @@ import os
 import numpy as np
 import pandas as pd
 from scipy import stats
+from datetime import datetime
+import pytz
 
 
 def train_single_epoch(args, model):
@@ -75,26 +77,26 @@ def evaluate(args, model):
 
 
 
-def compute_score(time_ids, invst_ids, Y_preds):
-    """ For local validations
-    """
-    dfs = []
-    for idx, invst_id in enumerate(invst_ids):
-        _time_id = time_ids[investment_id == invst_id]
-        _y = y[investment_id == invst_id]
+# def compute_score(time_ids, invst_ids, Y_preds):
+#     """ For local validations
+#     """
+#     dfs = []
+#     for idx, invst_id in enumerate(invst_ids):
+#         _time_id = time_ids[investment_id == invst_id]
+#         _y = y[investment_id == invst_id]
 
-        _time_id = _time_id[-GCF.EVAL_MAX_LEN:]
-        _y = _y[-GCF.EVAL_MAX_LEN:]
-        pred = Y_preds[idx, :].numpy()
-        if len(_y) != GCF.EVAL_MAX_LEN:
-            n_data = len(_y)
-            pred = pred[-n_data:]
+#         _time_id = _time_id[-GCF.EVAL_MAX_LEN:]
+#         _y = _y[-GCF.EVAL_MAX_LEN:]
+#         pred = Y_preds[idx, :].numpy()
+#         if len(_y) != GCF.EVAL_MAX_LEN:
+#             n_data = len(_y)
+#             pred = pred[-n_data:]
 
-        df = pd.DataFrame(np.vstack([_time_id, _y, pred]).T, columns=['time_id', 'target', 'predict'])
-        dfs.append(df)
-    result_df = pd.concat(dfs, axis=0)
+#         df = pd.DataFrame(np.vstack([_time_id, _y, pred]).T, columns=['time_id', 'target', 'predict'])
+#         dfs.append(df)
+#     result_df = pd.concat(dfs, axis=0)
     
-    time_count = result_df['time_id'].value_counts()
-    result_df = result_df.query(f"time_id in {time_count[time_count > 1].index.tolist()}")
-    score = np.mean(result_df.groupby('time_id').apply(lambda x: x.corr()['target']['predict']))
-    return score
+#     time_count = result_df['time_id'].value_counts()
+#     result_df = result_df.query(f"time_id in {time_count[time_count > 1].index.tolist()}")
+#     score = np.mean(result_df.groupby('time_id').apply(lambda x: x.corr()['target']['predict']))
+#     return score
